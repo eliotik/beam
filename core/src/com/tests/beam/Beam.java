@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -29,6 +30,8 @@ public class Beam extends ApplicationAdapter {
 	private Sprite spriteMiddleBackground;
 	private Sprite spriteMiddleOverlay;
 
+	private Array<MeshHelper> meshes = new Array<MeshHelper>();
+	
 	public static int angle = 125;
 	public static boolean started = false;
 
@@ -58,12 +61,45 @@ public class Beam extends ApplicationAdapter {
 		setMeshMiddleOverlayHelper(new MeshHelper(this, getSpriteMiddleOverlay()));
 		getMeshMiddleOverlayHelper().createMesh();
 
-		final int startX = 250;
-        final int startY = 150;
+		final int startX = 100;
+        final int startY = 50;
         final int width = 64;
         final int height = 64;
         final int sizeMultiplier = 3;
 
+        int localAngle = 360;
+        
+        while(localAngle > 0) {
+        	MeshHelper mesh = new MeshHelper(this, getSpriteMiddleBackground());
+        	mesh.createMesh();
+        	mesh.constructMesh( getSpriteMiddleBackground(),
+				1,
+				startX+400, startY+200,
+				0, 0,
+				width, height*sizeMultiplier,
+				1, 1,
+				localAngle,
+				Color.valueOf("30e957ff"),
+				255);
+        	meshes.add(mesh);
+        	
+        	mesh = new MeshHelper(this, getSpriteMiddleBackground());
+        	mesh.createMesh();
+        	mesh.constructMesh( getSpriteMiddleOverlay(),
+				1,
+				startX+400, startY+200,
+				0, 0,
+				width, height*sizeMultiplier,
+				1, 1,
+				localAngle,
+				Color.valueOf("ffffffff"),
+				255);
+        	meshes.add(mesh);
+        	
+        	
+        	localAngle -= 10;
+        }
+        
         getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
         		1,
         		startX, startY,
@@ -129,6 +165,9 @@ public class Beam extends ApplicationAdapter {
 		getMeshEndBackgroundHelper().dispose();
 		getMeshMiddleBackgroundHelper().dispose();
 		getMeshStartBackgroundHelper().dispose();
+		for(int i = 0; i < meshes.size; i++) {
+			meshes.get(i).dispose();
+		}
 	}
 
 	@Override
@@ -227,6 +266,10 @@ public class Beam extends ApplicationAdapter {
 
 		getMeshEndBackgroundHelper().drawMesh();
 		getMeshEndOverlayHelper().drawMesh();
+		
+		for(int i = 0; i < meshes.size; i++) {
+			meshes.get(i).drawMesh();
+		}
 
 
 	}

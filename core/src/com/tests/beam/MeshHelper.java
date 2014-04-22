@@ -316,11 +316,11 @@ public class MeshHelper {
 			getVertices()[idx++] = color;
 			getVertices()[idx++] = u2;
 			getVertices()[idx++] = v;
-			System.out.println("-------------------------------");
-			System.out.println(x1 +", "+ y1 +", "+ color +", "+ u +", "+ v);
-			System.out.println(x2 +", "+ y2 +", "+ colorE +", "+ u +", "+ v2);
-			System.out.println(x3 +", "+ y3 +", "+ colorE +", "+ u2 +", "+ v2);
-			System.out.println(x4 +", "+ y4 +", "+ color +", "+ u2 +", "+ v);
+//			System.out.println("-------------------------------");
+//			System.out.println(x1 +", "+ y1 +", "+ color +", "+ u +", "+ v);
+//			System.out.println(x2 +", "+ y2 +", "+ colorE +", "+ u +", "+ v2);
+//			System.out.println(x3 +", "+ y3 +", "+ colorE +", "+ u2 +", "+ v2);
+//			System.out.println(x4 +", "+ y4 +", "+ color +", "+ u2 +", "+ v);
 
 		}
 
