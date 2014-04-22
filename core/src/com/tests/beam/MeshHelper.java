@@ -11,36 +11,36 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 
 public class MeshHelper {
-	//Position attribute - (x, y) 
+	//Position attribute - (x, y)
 	public static final int POSITION_COMPONENTS = 2;
 
 	//Color attribute - (r, g, b, a)
 	public static final int COLOR_COMPONENTS = 1;
-	
+
 	//Color attribute - (u, v)
 	public static final int TEXTURE_COMPONENTS = 2;
 
 	//Total number of components for all attributes
 	public static final int NUM_COMPONENTS = POSITION_COMPONENTS + COLOR_COMPONENTS + TEXTURE_COMPONENTS;
-	
+
 	//The maximum number of triangles our mesh will hold
 	public static final int MAX_TRIS = 1;
 
 	public static final int MAX_INDICES = 4;
-	
+
 	// The maximum number of vertices our mesh will hold
 	public static final int MAX_VERTS = MAX_TRIS * MAX_INDICES;
-	
+
 	public static final int MAX_VERTICES = MAX_VERTS * NUM_COMPONENTS;
-	
+
     private Mesh mesh;
     private ShaderProgram shader;
     private Beam beam;
-    
+
     private float[] vertices = new float[MAX_VERTICES];
 
     private Sprite sprite;
-    
+
     public MeshHelper(Beam beam, Sprite sprite) {
     	setBeam(beam);
         createShader();
@@ -60,23 +60,23 @@ public class MeshHelper {
             throw new IllegalStateException("drawMesh called before a mesh has been created.");
         mesh.setVertices(getVertices());
         mesh.setIndices(new short [] {0, 1, 2, 3});
-        
+
         GL20 gl = Gdx.graphics.getGL20();
         gl.glEnable(GL20.GL_BLEND);
         gl.glEnable(GL20.GL_TEXTURE_2D);
         gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        gl.glActiveTexture(GL20.GL_TEXTURE0);
+        gl.glActiveTexture(GL20.GL_TEXTURE0);
         getBeam().getCamera().setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
+
         shader.begin();
-        
+
         shader.setUniformMatrix("u_projTrans", getBeam().getCamera().combined);
         shader.setUniformi("u_texture", 0);
 
         getSprite().getTexture().bind();
 
         mesh.render(shader, GL20.GL_TRIANGLE_FAN, 0, MAX_INDICES);
-        
+
         shader.end();
     }
 
@@ -114,11 +114,11 @@ public class MeshHelper {
         // make an actual shader from our strings
         shader = new ShaderProgram(vertexShader, fragmentShader);
         String log = shader.getLog();
-        
+
         // check there's no shader compile errors
         if (!shader.isCompiled())
             throw new IllegalStateException(shader.getLog());
-        
+
         if (log != null && log.length() != 0)
 			System.out.println("Shader Log: "+log);
     }
@@ -143,7 +143,7 @@ public class MeshHelper {
 	public void setVertices(float[] verticesData) {
 		vertices = verticesData;
 	}
-	
+
 	/**
 	 * Creates a mesh which will draw a repeated texture. To be used whenever we
 	 * are dealing with a region of a TextureAtlas
@@ -174,7 +174,7 @@ public class MeshHelper {
 	 *            end interpolation target.
 	 * @return
 	 */
-	public final float[] constructMesh(Sprite region, int scale, 
+	public final float[] constructMesh(Sprite region, int scale,
 			float x, float y, float originX,
 			float originY, float width, float height, float scaleX,
 			float scaleY, float rotation, Color colorT, float alpha) {
@@ -184,6 +184,7 @@ public class MeshHelper {
 		}
 
 		float color = colorT.toFloatBits();
+		System.out.println(colorT.r+" : "+colorT.g+" : "+colorT.b+" : "+colorT.a+" : "+colorT.toString());
 		float colorE;
 
 		int idx = 0;
@@ -319,7 +320,7 @@ public class MeshHelper {
 //			System.out.println(x4 +", "+ y4 +", "+ color +", "+ u2 +", "+ v);
 
 		}
-		
+
 		return getVertices();
 	}
 
