@@ -62,22 +62,28 @@ public class MeshHelper {
         mesh.setIndices(new short [] {0, 1, 2, 3});
 
         GL20 gl = Gdx.graphics.getGL20();
-        gl.glEnable(GL20.GL_BLEND);
+
         gl.glEnable(GL20.GL_TEXTURE_2D);
-        gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         gl.glActiveTexture(GL20.GL_TEXTURE0);
+
+        gl.glEnable(GL20.GL_BLEND);
+        gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         getBeam().getCamera().setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        getSprite().getTexture().bind();
 
         shader.begin();
 
         shader.setUniformMatrix("u_projTrans", getBeam().getCamera().combined);
         shader.setUniformi("u_texture", 0);
 
-        getSprite().getTexture().bind();
+
 
         mesh.render(shader, GL20.GL_TRIANGLE_FAN, 0, MAX_INDICES);
 
         shader.end();
+        gl.glDisable(GL20.GL_TEXTURE_2D);
     }
 
     private void createShader() {
@@ -180,11 +186,8 @@ public class MeshHelper {
 			float scaleY, float rotation, Color colorT, float alpha) {
 		if (scale * MAX_VERTICES > getVertices().length) {
 			setVertices( new float[MAX_VERTICES * scale] );
-			System.out.println("changing vertices array: "+scale+" : "+MAX_VERTICES+" : "+(scale * MAX_VERTICES)+" : "+getVertices().length);
 		}
-
 		float color = colorT.toFloatBits();
-		System.out.println(colorT.r+" : "+colorT.g+" : "+colorT.b+" : "+colorT.a+" : "+colorT.toString());
 		float colorE;
 
 		int idx = 0;
@@ -313,11 +316,11 @@ public class MeshHelper {
 			getVertices()[idx++] = color;
 			getVertices()[idx++] = u2;
 			getVertices()[idx++] = v;
-//			System.out.println("-------------------------------");
-//			System.out.println(x1 +", "+ y1 +", "+ color +", "+ u +", "+ v);
-//			System.out.println(x2 +", "+ y2 +", "+ colorE +", "+ u +", "+ v2);
-//			System.out.println(x3 +", "+ y3 +", "+ colorE +", "+ u2 +", "+ v2);
-//			System.out.println(x4 +", "+ y4 +", "+ color +", "+ u2 +", "+ v);
+			System.out.println("-------------------------------");
+			System.out.println(x1 +", "+ y1 +", "+ color +", "+ u +", "+ v);
+			System.out.println(x2 +", "+ y2 +", "+ colorE +", "+ u +", "+ v2);
+			System.out.println(x3 +", "+ y3 +", "+ colorE +", "+ u2 +", "+ v2);
+			System.out.println(x4 +", "+ y4 +", "+ color +", "+ u2 +", "+ v);
 
 		}
 

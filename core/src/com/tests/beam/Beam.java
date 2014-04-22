@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class Beam extends ApplicationAdapter {
-	private SpriteBatch batch;
 	private TextureAtlas beam;
 
 	private OrthographicCamera camera;
@@ -35,7 +34,6 @@ public class Beam extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		setBatch(new SpriteBatch());
 		setBeam(new TextureAtlas(Gdx.files.internal("beam/beam.atlas")));
 
 		setSpriteEndBackground(getBeam().createSprite("end_background"));
@@ -60,94 +58,166 @@ public class Beam extends ApplicationAdapter {
 		setMeshMiddleOverlayHelper(new MeshHelper(this, getSpriteMiddleOverlay()));
 		getMeshMiddleOverlayHelper().createMesh();
 
-	}
-
-	@Override
-	public void dispose(){
-		getBeam().dispose();
-		getBatch().dispose();
-		getMeshEndBackgroundHelper().dispose();
-	}
-
-	@Override
-	public void render () {
-        Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
-        getCamera().update();
-
-        final int startX = 250;
+		final int startX = 250;
         final int startY = 150;
         final int width = 64;
         final int height = 64;
         final int sizeMultiplier = 3;
 
-        if (!Beam.started) {
-    		Timer.schedule(new Task() {
-    			@Override
-    			public void run() {
-    				if (!Beam.started) Beam.started = true;
-    				if (Beam.angle >= 360) Beam.angle = 0;
+        getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
+        		1,
+        		startX, startY,
+        		0, 0,
+        		width, height,
+        		1, 1,
+        		Beam.angle,
+        		Color.valueOf("30e957ff"),
+        		255);
+        getMeshStartOverlayHelper().constructMesh( getSpriteStartOverlay(),
+        		1,
+        		startX, startY,
+        		0, 0,
+        		width, height,
+        		1, 1,
+        		Beam.angle,
+        		Color.valueOf("ffffffff"),
+        		0);
 
-    		        getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
-    		        		1,
-    		        		startX, startY,
-    		        		0, 0,
-    		        		width, height,
-    		        		1, 1,
-    		        		Beam.angle,
-    		        		new Color(48/255f, 233/255f, 87/255f, 255/255f),
-    		        		0);
-    		        getMeshStartOverlayHelper().constructMesh( getSpriteStartOverlay(),
-    		        		1,
-    		        		startX, startY,
-    		        		0, 0,
-    		        		width, height,
-    		        		1, 1,
-    		        		Beam.angle,
-    		        		new Color(255/255f, 255/255f, 255/255f, 255/255f),
-    		        		0);
+		getMeshMiddleBackgroundHelper().constructMesh( getSpriteMiddleBackground(),
+				1,
+				startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
+				0, 0,
+				width, height*sizeMultiplier,
+				1, 1,
+				Beam.angle,
+				Color.valueOf("30e957ff"),
+				255);
+		getMeshMiddleOverlayHelper().constructMesh( getSpriteMiddleOverlay(),
+				1,
+				startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
+				0, 0,
+				width, height*sizeMultiplier,
+				1, 1,
+				Beam.angle,
+				Color.valueOf("ffffffff"),
+				255);
 
-    				getMeshMiddleBackgroundHelper().constructMesh( getSpriteMiddleBackground(),
-    						1,
-    						startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
-    						0, 0,
-    						width, height*sizeMultiplier,
-    						1, 1,
-    						Beam.angle,
-    						new Color(48, 233, 87, 255),
-    						255);
-    				getMeshMiddleOverlayHelper().constructMesh( getSpriteMiddleOverlay(),
-    						1,
-    						startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
-    						0, 0,
-    						width, height*sizeMultiplier,
-    						1, 1,
-    						Beam.angle,
-    						new Color(255, 255, 255, 255),
-    						255);
+		getMeshEndBackgroundHelper().constructMesh( getSpriteEndBackground(),
+				1,
+				startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
+				0, 0,
+				width, height,
+				1, 1,
+				Beam.angle,
+				Color.valueOf("30e957ff"),
+				255);
+		getMeshEndOverlayHelper().constructMesh( getSpriteEndOverlay(),
+				1,
+				startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
+				0, 0,
+				width, height,
+				1, 1,
+				Beam.angle,
+				Color.valueOf("ffffffff"),
+				255);
 
-    				getMeshEndBackgroundHelper().constructMesh( getSpriteEndBackground(),
-    						1,
-    						startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
-    						0, 0,
-    						width, height,
-    						1, 1,
-    						Beam.angle,
-    						new Color(48, 233, 87, 255),
-    						255);
-    				getMeshEndOverlayHelper().constructMesh( getSpriteEndOverlay(),
-    						1,
-    						startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
-    						0, 0,
-    						width, height,
-    						1, 1,
-    						Beam.angle,
-    						new Color(255, 255, 255, 255),
-    						255);
-    				Beam.angle++;
+	}
 
-    			}
-    		}, 0, 1 / 25.0f);
-        }
+	@Override
+	public void dispose(){
+		getBeam().dispose();
+		getMeshEndBackgroundHelper().dispose();
+		getMeshMiddleBackgroundHelper().dispose();
+		getMeshStartBackgroundHelper().dispose();
+	}
+
+	@Override
+	public void render () {
+		Gdx.graphics.getGL20().glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
+        getCamera().update();
+
+//        getMeshStartBackgroundHelper().setVertices(new float[] {
+//    		250.0f, 150.0f, -1.17487E37f, 0.6484375f, 0.015625f,
+//    		197.5688f, 113.29892f, 2.37334E-39f, 0.6484375f, 0.515625f,
+//    		160.86772f, 165.73012f, 2.37334E-39f, 0.7734375f, 0.515625f,
+//    		213.29892f, 202.4312f, -7.17487E37f, 0.7734375f, 0.015625f
+//		});
+
+//        final int startX = 250;
+//        final int startY = 150;
+//        final int width = 64;
+//        final int height = 64;
+//        final int sizeMultiplier = 3;
+//
+//        if (!Beam.started) {
+//    		Timer.schedule(new Task() {
+//    			@Override
+//    			public void run() {
+//    				if (!Beam.started) Beam.started = true;
+//    				if (Beam.angle >= 360) Beam.angle = 0;
+//
+//    		        getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
+//    		        		1,
+//    		        		startX, startY,
+//    		        		0, 0,
+//    		        		width, height,
+//    		        		1, 1,
+//    		        		Beam.angle,
+//    		        		new Color(48/255f, 233/255f, 87/255f, 255/255f),
+//    		        		0);
+//    		        getMeshStartOverlayHelper().constructMesh( getSpriteStartOverlay(),
+//    		        		1,
+//    		        		startX, startY,
+//    		        		0, 0,
+//    		        		width, height,
+//    		        		1, 1,
+//    		        		Beam.angle,
+//    		        		new Color(255/255f, 255/255f, 255/255f, 255/255f),
+//    		        		0);
+//
+//    				getMeshMiddleBackgroundHelper().constructMesh( getSpriteMiddleBackground(),
+//    						1,
+//    						startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
+//    						0, 0,
+//    						width, height*sizeMultiplier,
+//    						1, 1,
+//    						Beam.angle,
+//    						new Color(48, 233, 87, 255),
+//    						255);
+//    				getMeshMiddleOverlayHelper().constructMesh( getSpriteMiddleOverlay(),
+//    						1,
+//    						startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
+//    						0, 0,
+//    						width, height*sizeMultiplier,
+//    						1, 1,
+//    						Beam.angle,
+//    						new Color(255, 255, 255, 255),
+//    						255);
+//
+//    				getMeshEndBackgroundHelper().constructMesh( getSpriteEndBackground(),
+//    						1,
+//    						startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
+//    						0, 0,
+//    						width, height,
+//    						1, 1,
+//    						Beam.angle,
+//    						new Color(48, 233, 87, 255),
+//    						255);
+//    				getMeshEndOverlayHelper().constructMesh( getSpriteEndOverlay(),
+//    						1,
+//    						startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
+//    						0, 0,
+//    						width, height,
+//    						1, 1,
+//    						Beam.angle,
+//    						new Color(255, 255, 255, 255),
+//    						255);
+//    				Beam.angle++;
+//
+//    			}
+//    		}, 0, 1 / 25.0f);
+//        }
 
 		getMeshStartBackgroundHelper().drawMesh();
 		getMeshStartOverlayHelper().drawMesh();
@@ -159,16 +229,6 @@ public class Beam extends ApplicationAdapter {
 		getMeshEndOverlayHelper().drawMesh();
 
 
-	}
-
-
-
-	public SpriteBatch getBatch() {
-		return batch;
-	}
-
-	public void setBatch(SpriteBatch batch) {
-		this.batch = batch;
 	}
 
 	public TextureAtlas getBeam() {
