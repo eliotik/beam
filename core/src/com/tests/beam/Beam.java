@@ -1,396 +1,107 @@
 package com.tests.beam;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
+import com.tests.beam.mesh.MeshHelper;
+import com.tests.beam.mesh.Meshes;
 
-public class Beam extends ApplicationAdapter {
-	private TextureAtlas beam;
-
-	private OrthographicCamera camera;
-
-	private MeshHelper meshEndBackgroundHelper;
-	private MeshHelper meshEndOverlayHelper;
-	private Sprite spriteEndBackground;
-	private Sprite spriteEndOverlay;
-	private MeshHelper meshStartBackgroundHelper;
-	private MeshHelper meshStartOverlayHelper;
-	private Sprite spriteStartBackground;
-	private Sprite spriteStartOverlay;
-	private MeshHelper meshMiddleBackgroundHelper;
-	private MeshHelper meshMiddleOverlayHelper;
-	private Sprite spriteMiddleBackground;
-	private Sprite spriteMiddleOverlay;
-
+public class Beam {
 	private Array<MeshHelper> meshes = new Array<MeshHelper>();
 	
-	public static int angle = 125;
-	public static boolean started = false;
-
-	@Override
-	public void create () {
-		setBeam(new TextureAtlas(Gdx.files.internal("beam/beam.atlas")));
-
-		setSpriteEndBackground(getBeam().createSprite("end_background"));
-		setSpriteEndOverlay(getBeam().createSprite("end_overlay"));
-		setSpriteStartBackground(getBeam().createSprite("start_background"));
-		setSpriteStartOverlay(getBeam().createSprite("start_overlay"));
-		setSpriteMiddleBackground(getBeam().createSprite("middle_background"));
-		setSpriteMiddleOverlay(getBeam().createSprite("middle_overlay"));
-
-		setCamera(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-
-		setMeshEndBackgroundHelper(new MeshHelper(this, getSpriteEndBackground()));
-		getMeshEndBackgroundHelper().createMesh();
-		setMeshEndOverlayHelper(new MeshHelper(this, getSpriteEndOverlay()));
-		getMeshEndOverlayHelper().createMesh();
-		setMeshStartBackgroundHelper(new MeshHelper(this, getSpriteStartBackground()));
-		getMeshStartBackgroundHelper().createMesh();
-		setMeshStartOverlayHelper(new MeshHelper(this, getSpriteStartOverlay()));
-		getMeshStartOverlayHelper().createMesh();
-		setMeshMiddleBackgroundHelper(new MeshHelper(this, getSpriteMiddleBackground()));
-		getMeshMiddleBackgroundHelper().createMesh();
-		setMeshMiddleOverlayHelper(new MeshHelper(this, getSpriteMiddleOverlay()));
-		getMeshMiddleOverlayHelper().createMesh();
-
-//		final int startX = 100;
-//        final int startY = 50;
-//        final int width = 64;
-//        final int height = 64;
-//        final int sizeMultiplier = 3;
-//
-//        int localAngle = 360;
-//
-//        while(localAngle > 0) {
-//            float sin = MathUtils.sinDeg(localAngle);
-//            float cos = MathUtils.cosDeg(localAngle);
-//            float fx = (width/2)*cos + (height/2)* sin;
-//            float fy = (width/2)*sin - (height/2)* cos;
-//        	MeshHelper mesh = new MeshHelper(this, getSpriteMiddleBackground());
-//        	mesh.createMesh();
-//        	mesh.constructMesh( getSpriteMiddleBackground(),
-//				1,
-//				startX+400-fx, startY+200-fy,
-//				0, 0,
-//				width, height*sizeMultiplier,
-//				1, 1,
-//				localAngle,
-//				Color.valueOf("30e957ff"),
-//				255);
-//        	meshes.add(mesh);
-//
-//        	mesh = new MeshHelper(this, getSpriteMiddleBackground());
-//        	mesh.createMesh();
-//        	mesh.constructMesh( getSpriteMiddleOverlay(),
-//				1,
-//                startX+400-fx, startY+200-fy,
-//				0, 0,
-//				width, height*sizeMultiplier,
-//				1, 1,
-//				localAngle,
-//				Color.valueOf("ffffffff"),
-//				255);
-//        	meshes.add(mesh);
-//
-//
-//        	localAngle -= 10;
-//        }
-//
-//        getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
-//        		1,
-//        		startX, startY,
-//        		0, 0,
-//        		width, height,
-//        		1, 1,
-//        		Beam.angle,
-//        		Color.valueOf("30e957ff"),
-//        		255);
-//        getMeshStartOverlayHelper().constructMesh( getSpriteStartOverlay(),
-//        		1,
-//        		startX, startY,
-//        		0, 0,
-//        		width, height,
-//        		1, 1,
-//        		Beam.angle,
-//        		Color.valueOf("ffffffff"),
-//        		0);
-//
-//		getMeshMiddleBackgroundHelper().constructMesh( getSpriteMiddleBackground(),
-//				1,
-//				startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
-//				0, 0,
-//				width, height*sizeMultiplier,
-//				1, 1,
-//				Beam.angle,
-//				Color.valueOf("30e957ff"),
-//				255);
-//		getMeshMiddleOverlayHelper().constructMesh( getSpriteMiddleOverlay(),
-//				1,
-//				startX+52.5f*sizeMultiplier, startY+36.6f*sizeMultiplier,
-//				0, 0,
-//				width, height*sizeMultiplier,
-//				1, 1,
-//				Beam.angle,
-//				Color.valueOf("ffffffff"),
-//				255);
-//
-//		getMeshEndBackgroundHelper().constructMesh( getSpriteEndBackground(),
-//				1,
-//				startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
-//				0, 0,
-//				width, height,
-//				1, 1,
-//				Beam.angle,
-//				Color.valueOf("30e957ff"),
-//				255);
-//		getMeshEndOverlayHelper().constructMesh( getSpriteEndOverlay(),
-//				1,
-//				startX+52.5f*sizeMultiplier+52.5f, startY+36.6f*sizeMultiplier+36.6f,
-//				0, 0,
-//				width, height,
-//				1, 1,
-//				Beam.angle,
-//				Color.valueOf("ffffffff"),
-//				255);
-
+	final static int BEAM_WIDTH = 64;
+	final static int BEAM_HEIGHT = 64;
+	
+	private int rotation;
+	
+	public Beam(Main main, float x, float y, int size, int rotation, String backgroundColour, String overlayColour) {
+		initMeshes(main, x, y, size, rotation, backgroundColour, overlayColour);
 	}
 
-	@Override
-	public void dispose(){
-		getBeam().dispose();
-		getMeshEndBackgroundHelper().dispose();
-		getMeshMiddleBackgroundHelper().dispose();
-		getMeshStartBackgroundHelper().dispose();
-		for(int i = 0; i < meshes.size; i++) {
-			meshes.get(i).dispose();
-		}
-	}
+	private void initMeshes(Main main, float x, float y, int size,
+			int rotation, String backgroundColour, String overlayColour) {
+		setRotation(rotation);
 
-	@Override
-	public void render () {
-		Gdx.graphics.getGL20().glClearColor(0.2f, 0.2f, 0.2f, 1);
-        Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
-        getCamera().update();
-
-        getMeshStartBackgroundHelper().setVertices(new float[] {
-    		250.0f, 150.0f, -1.17487E37f, 0.6484375f, 0.015625f,
-    		197.5688f, 113.29892f, 2.37334E-39f, 0.6484375f, 0.515625f,
-    		160.86772f, 165.73012f, 2.37334E-39f, 0.7734375f, 0.515625f,
-    		213.29892f, 202.4312f, -7.17487E37f, 0.7734375f, 0.015625f
-		});
-
-        final int startX = 250;
-        final int startY = 150;
-        final int width = 64;
-        final int height = 64;
-        final int sizeMultiplier = 3;
-
-        if (!Beam.started) {
-    		Timer.schedule(new Task() {
-    			@Override
-    			public void run() {
-    				if (!Beam.started) Beam.started = true;
-    				if (Beam.angle >= 360) Beam.angle = 0;
-                    float sin = MathUtils.sinDeg(Beam.angle);
-                    float cos = MathUtils.cosDeg(Beam.angle);
-                    float fx = (width/2)*cos + (height/2)* sin;
-                    float fy = (width/2)*sin - (height/2)* cos;
-    		        getMeshStartBackgroundHelper().constructMesh( getSpriteStartBackground(),
-    		        		1,
-    		        		startX-fx, startY-fy,
-    		        		0, 0,
-    		        		width, height,
-    		        		1, 1,
-    		        		Beam.angle,
-    		        		new Color(48/255f, 233/255f, 87/255f, 255/255f),
-    		        		0);
-    		        getMeshStartOverlayHelper().constructMesh( getSpriteStartOverlay(),
-    		        		1,
-    		        		startX-fx, startY-fy,
-    		        		0, 0,
-    		        		width, height,
-    		        		1, 1,
-    		        		Beam.angle,
-    		        		new Color(255/255f, 255/255f, 255/255f, 255/255f),
-    		        		0);
-
-    				getMeshMiddleBackgroundHelper().constructMesh( getSpriteMiddleBackground(),
-    						1,
-    						startX+52.5f*sizeMultiplier-fx, startY+36.6f*sizeMultiplier-fy,
-    						0, 0,
-    						width, height*sizeMultiplier,
-    						1, 1,
-    						Beam.angle,
-    						new Color(48, 233, 87, 255),
-    						255);
-    				getMeshMiddleOverlayHelper().constructMesh( getSpriteMiddleOverlay(),
-    						1,
-    						startX+52.5f*sizeMultiplier-fx, startY+36.6f*sizeMultiplier-fy,
-    						0, 0,
-    						width, height*sizeMultiplier,
-    						1, 1,
-    						Beam.angle,
-    						new Color(255, 255, 255, 255),
-    						255);
-
-    				getMeshEndBackgroundHelper().constructMesh( getSpriteEndBackground(),
-    						1,
-    						startX+52.5f*sizeMultiplier+52.5f-fx, startY+36.6f*sizeMultiplier+36.6f-fy,
-    						0, 0,
-    						width, height,
-    						1, 1,
-    						Beam.angle,
-    						new Color(48, 233, 87, 255),
-    						255);
-    				getMeshEndOverlayHelper().constructMesh( getSpriteEndOverlay(),
-    						1,
-    						startX+52.5f*sizeMultiplier+52.5f-fx, startY+36.6f*sizeMultiplier+36.6f-fy,
-    						0, 0,
-    						width, height,
-    						1, 1,
-    						Beam.angle,
-    						new Color(255, 255, 255, 255),
-    						255);
-    				Beam.angle++;
-
-    			}
-    		}, 0, 1 / 25.0f);
-        }
-
-		getMeshStartBackgroundHelper().drawMesh();
-		getMeshStartOverlayHelper().drawMesh();
-
-		getMeshMiddleBackgroundHelper().drawMesh();
-		getMeshMiddleOverlayHelper().drawMesh();
-
-		getMeshEndBackgroundHelper().drawMesh();
-		getMeshEndOverlayHelper().drawMesh();
+		addMesh(main, "start_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+		addMesh(main, "start_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
 		
-		for(int i = 0; i < meshes.size; i++) {
-			meshes.get(i).drawMesh();
+		addMesh(main, "middle_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
+		addMesh(main, "middle_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
+
+		addMesh(main, "end_background", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+		addMesh(main, "end_overlay", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+	}
+
+	private void addMesh(Main main, String spriteName, float x, float y, int width, int height, int rotation, String colour) {
+		MeshHelper mesh = Meshes.create(
+			main, 
+			main.getSprites().get(SpriteType.BEAM, spriteName), 
+			rotation, 
+			x, y,
+    		width, height,
+    		Color.valueOf(colour)
+		);
+		getMeshes().add(mesh);
+	}
+
+    private float[] getSlip(float angle, int width, int height){
+        float[] slip = new float[2];
+        float sin = MathUtils.sinDeg(angle);
+        float cos = MathUtils.cosDeg(angle);
+        slip[0] = (width/2)*cos - (height/2)* sin;
+        slip[1] = (width/2)*sin + (height/2)* cos;
+
+        return slip;
+    }
+	
+    public int getGroupId(int index) {
+    	return (int) (Math.floor(index/2)+1);
+    }
+    
+	public void render() {
+		for(int i = 0, l = getMeshes().size; i < l; ++i) getMeshes().get(i).drawMesh();
+	}
+	
+	public void dispose() {
+		for(int i = 0, l = getMeshes().size; i < l; ++i) getMeshes().get(i).dispose();
+	}
+	
+	public void clear() {
+		getMeshes().clear();
+	}
+
+	public Array<MeshHelper> getMeshes() {
+		return meshes;
+	}
+
+	public void setMeshes(Array<MeshHelper> meshes) {
+		this.meshes = meshes;
+	}
+
+	public int getRotation() {
+		return rotation;
+	}
+
+	public void setRotation(int rotation) {
+		this.rotation = rotation;
+	}
+
+	public void update(float x, float y, int size, int rotation) {
+		setRotation(rotation);
+		for (int i = 0, l = getMeshes().size; i < l; ++i) {
+			switch(getGroupId(i)) {
+			case 1:
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], rotation);
+				break;
+			case 2:
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], rotation);
+				break;
+			case 3: 
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], rotation);
+				break;
+			default: 
+				break;
+			}
 		}
-
-
-	}
-
-	public TextureAtlas getBeam() {
-		return beam;
-	}
-
-	public void setBeam(TextureAtlas beam) {
-		this.beam = beam;
-	}
-
-	public OrthographicCamera getCamera() {
-		return camera;
-	}
-
-	public void setCamera(OrthographicCamera camera) {
-		this.camera = camera;
-	}
-
-	public MeshHelper getMeshEndBackgroundHelper() {
-		return meshEndBackgroundHelper;
-	}
-
-	public void setMeshEndBackgroundHelper(MeshHelper meshHelper) {
-		this.meshEndBackgroundHelper = meshHelper;
-	}
-
-	public Sprite getSpriteEndBackground() {
-		return spriteEndBackground;
-	}
-
-	public void setSpriteEndBackground(Sprite sprite) {
-		this.spriteEndBackground = sprite;
-	}
-
-	public Sprite getSpriteEndOverlay() {
-		return spriteEndOverlay;
-	}
-
-	public void setSpriteEndOverlay(Sprite spriteEndOverlay) {
-		this.spriteEndOverlay = spriteEndOverlay;
-	}
-
-	public MeshHelper getMeshEndOverlayHelper() {
-		return meshEndOverlayHelper;
-	}
-
-	public void setMeshEndOverlayHelper(MeshHelper meshEndOverlayHelper) {
-		this.meshEndOverlayHelper = meshEndOverlayHelper;
-	}
-
-	public MeshHelper getMeshStartBackgroundHelper() {
-		return meshStartBackgroundHelper;
-	}
-
-	public void setMeshStartBackgroundHelper(MeshHelper meshStartBackgroundHelper) {
-		this.meshStartBackgroundHelper = meshStartBackgroundHelper;
-	}
-
-	public MeshHelper getMeshStartOverlayHelper() {
-		return meshStartOverlayHelper;
-	}
-
-	public void setMeshStartOverlayHelper(MeshHelper meshStartOverlayHelper) {
-		this.meshStartOverlayHelper = meshStartOverlayHelper;
-	}
-
-	public Sprite getSpriteStartBackground() {
-		return spriteStartBackground;
-	}
-
-	public void setSpriteStartBackground(Sprite spriteStartBackground) {
-		this.spriteStartBackground = spriteStartBackground;
-	}
-
-	public Sprite getSpriteStartOverlay() {
-		return spriteStartOverlay;
-	}
-
-	public void setSpriteStartOverlay(Sprite spriteStartOverlay) {
-		this.spriteStartOverlay = spriteStartOverlay;
-	}
-
-	public MeshHelper getMeshMiddleBackgroundHelper() {
-		return meshMiddleBackgroundHelper;
-	}
-
-	public void setMeshMiddleBackgroundHelper(MeshHelper meshMiddleBackgroundHelper) {
-		this.meshMiddleBackgroundHelper = meshMiddleBackgroundHelper;
-	}
-
-	public MeshHelper getMeshMiddleOverlayHelper() {
-		return meshMiddleOverlayHelper;
-	}
-
-	public void setMeshMiddleOverlayHelper(MeshHelper meshMiddleOverlayHelper) {
-		this.meshMiddleOverlayHelper = meshMiddleOverlayHelper;
-	}
-
-	public Sprite getSpriteMiddleBackground() {
-		return spriteMiddleBackground;
-	}
-
-	public void setSpriteMiddleBackground(Sprite spriteMiddleBackground) {
-		this.spriteMiddleBackground = spriteMiddleBackground;
-	}
-
-	public Sprite getSpriteMiddleOverlay() {
-		return spriteMiddleOverlay;
-	}
-
-	public void setSpriteMiddleOverlay(Sprite spriteMiddleOverlay) {
-		this.spriteMiddleOverlay = spriteMiddleOverlay;
 	}
 }
