@@ -1,78 +1,43 @@
 package com.tests.beam;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-import com.tests.beam.mesh.MeshHelper;
-import com.tests.beam.mesh.Meshes;
 
 public class Carousel {
-	private Array<MeshHelper> meshes = new Array<MeshHelper>();
+	private Array<Beam> beams = new Array<Beam>();
 	
-	public Carousel(Main main, int quantity) {
+	public Carousel(final Main main, int quantity) {
 		int localAngle = 360;
 		if (quantity <= 0) quantity = 1;
 		float angleStep = (int)(localAngle / quantity);
         
-        final int meshStartX = Gdx.graphics.getWidth()/2;
-		final int meshStartY = Gdx.graphics.getHeight()/2;
-		final int meshWidth = 64;
-		final int meshHeight = 64;
-		final int meshSizeMultiplier = 3;
 		while(localAngle > 0) {
-        	MeshHelper mesh = Meshes.create(
-        			main, 
-        			main.getSprites().get(SpriteType.BEAM, "middle_background"), 
-        			localAngle, 
-        			meshStartX , meshStartY,
-        			meshWidth, meshHeight*meshSizeMultiplier,
-            		Color.valueOf("30e957ff"));
-        	getMeshes().add(mesh);
-        	
-        	mesh = Meshes.create(
-        			main, 
-        			main.getSprites().get(SpriteType.BEAM, "middle_overlay"), 
-        			localAngle, 
-        			meshStartX , meshStartY,
-        			meshWidth, meshHeight*meshSizeMultiplier,
-            		Color.valueOf("ffffffff"));
-        	getMeshes().add(mesh);
-        	
+			Beam beam = new Beam(main, Gdx.graphics.getWidth() / 2,
+					Gdx.graphics.getHeight() / 2, 3, localAngle, "5f2f32ff", "ffffffff");
+			beams.add(beam);
         	localAngle -= angleStep;
         }
         
 		Timer.schedule(new Task() {
 			@Override
 			public void run() {
-				for(int i = 0, l = getMeshes().size; i < l; ++i) {
-					MeshHelper mesh = getMeshes().get(i);
-					mesh.setRotation(mesh.getRotation() - 1);
-					if (mesh.getRotation() <= 0) mesh.setRotation(360);
-					mesh.createMesh( 
-						meshStartX, meshStartY,
-						meshWidth, meshHeight*meshSizeMultiplier,
-						(i % 2 == 0) ? Color.valueOf("30e957ff") : Color.valueOf("ffffffff")
-					);
+				for(int i = 0, l = beams.size; i < l; ++i) {
+					Beam beam = beams.get(i);
+					int angle = beam.getRotation()-1;
+					if (angle <= 0) angle = 360;
+					beam.update(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 3, angle);
 				}
 			}
 		}, 0, 1 / 25.0f);
 	}
 	
 	public void render() {
-		for(int i = 0, l = getMeshes().size; i < l; ++i) getMeshes().get(i).drawMesh();
+		for(int i = 0, l = beams.size; i < l; ++i) beams.get(i).render();
 	}
 	
 	public void dispose() {
-		for(int i = 0, l = getMeshes().size; i < l; ++i) getMeshes().get(i).dispose();
-	}
-
-	public Array<MeshHelper> getMeshes() {
-		return meshes;
-	}
-
-	public void setMeshes(Array<MeshHelper> meshes) {
-		this.meshes = meshes;
+		for(int i = 0, l = beams.size; i < l; ++i) beams.get(i).dispose();
 	}
 }

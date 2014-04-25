@@ -21,6 +21,9 @@ public class MeshHelper {
     private Sprite sprite;
     private final Main main;
     private int rotation = 0;
+    private float width;
+    private float height;
+    private Color colour;
     
     public MeshHelper(Main main, Sprite sprite, int rotation) {
     	this.main = main;
@@ -30,6 +33,9 @@ public class MeshHelper {
     }
 
 	public void createMesh(float meshStartX , float meshStartY, float meshWidth, float meshHeight, Color colour) {
+		setColour(colour);
+		setWidth(meshWidth);
+		setHeight(meshHeight);
 		float[] vertices = constructMesh(
 				1,
 				meshStartX , meshStartY,
@@ -167,12 +173,13 @@ public class MeshHelper {
 	public float[] constructMesh(int scale,
 			float x, float y, float originX,
 			float originY, float width, float height, float scaleX,
-			float scaleY, Color colorT, float alpha) {
+			float scaleY, Color colorBase, float alpha) {
 //		if (scale * MAX_VERTICES > getVertices().length) {
 //			setVertices( new float[MAX_VERTICES * scale] );
 //		}
 		float[] vertices = new float[20];
 		
+		Color colorT = colorBase.cpy();
 		float color = colorT.toFloatBits();
 		float colorE;
 
@@ -343,5 +350,41 @@ public class MeshHelper {
 
 	public Main getMain() {
 		return main;
+	}
+
+	public void updateMesh(float x, float y, int rotation) {
+		setRotation(rotation);
+		getMesh().setVertices(constructMesh(
+				1,
+				x , y,
+				0, 0,
+				getWidth(), getHeight(),
+				1f, 1f,
+				getColour(),
+				1));
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
+	}
+
+	public Color getColour() {
+		return colour;
+	}
+
+	public void setColour(Color colour) {
+		this.colour = colour;
 	}
 }

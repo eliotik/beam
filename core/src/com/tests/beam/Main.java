@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -18,6 +18,7 @@ import com.tests.beam.mesh.Meshes;
 
 public class Main extends ApplicationAdapter {
 	private Sprites sprites;
+	private Textures textures;
 	private OrthographicCamera camera;
 	private Beam beam;
 	private Carousel carousel;
@@ -29,13 +30,16 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create() {
 		setSprites(new Sprites(this));
+		setTextures(new Textures(this));
 		setBatch(new SpriteBatch());
-		setBackground(new Texture(Gdx.files.internal("background/cell_clear.jpg")));
+		setBackground(getTextures().get("background"));
 		getBackground().setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		tilesW = Gdx.graphics.getWidth() / getBackground().getWidth() + 1;
+		tilesH = Gdx.graphics.getHeight() / getBackground().getHeight() + 1;
 		createRandomBackgrounds();
 		setCamera(new OrthographicCamera(Gdx.graphics.getWidth(),
 				Gdx.graphics.getHeight()));
-		generateMeshes(MeshType.BEAM);
+		generateMeshes(MeshType.CAROUSEL);
 	}
 
 	private void createRandomBackgrounds() {
@@ -50,19 +54,19 @@ public class Main extends ApplicationAdapter {
 			int x = MathUtils.random(cols);
 			int y = MathUtils.random(rows);
 			if (!added.containsKey(x+":"+y)) {
-				String cellName = "cell_broken";
+				String textureName = "cell_broken";
 				int r = MathUtils.random(10);
 				if (r >= 7) {
-					cellName = "cell_dirty";
+					textureName = "cell_dirty";
 				} else if (r >=4 && r < 7) {
-					cellName = "cell_blood";
+					textureName = "cell_blood";
 				}
 				
 				MeshHelper mesh = Meshes.create(
 		    			this, 
-		    			getSprites().get(SpriteType.CELL, cellName), 
+		    			new Sprite(getTextures().get(textureName)), 
 		    			0, 
-		    			x*32 , y*32,
+		    			x*32 + 4 , y*32 + 1,
 		    			32, 32,
 		        		null);
 				randomBackgrounds.add(mesh);
@@ -70,26 +74,6 @@ public class Main extends ApplicationAdapter {
 				--amount;
 			}
 		}
-		/*
-		for (int x = 0; x < rows; ++x) {
-			if (amount <= 0) return;
-			for (int y = 0; y < cols; ++y) {
-				int r = MathUtils.random(0, coeficient);
-				int rb = MathUtils.random(r);
-				System.out.println(r+" : "+rb);
-				if (r < 150 && rb>100 && x%2==MathUtils.random(1) && y%2==MathUtils.random(1)) {
-					MeshHelper mesh = Meshes.create(
-			    			this, 
-			    			getSprites().get(SpriteType.CELL, "cell_blood"), 
-			    			0, 
-			    			x*32 , y*32,
-			    			32, 32,
-			        		Color.valueOf("30e957ff"));
-					randomBackgrounds.add(mesh);
-					--amount;
-				}
-			}
-		}*/
 	}
 
 	private void generateMeshes(MeshType type) {
@@ -109,7 +93,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void createCarousel() {
-		setCarousel(new Carousel(this, 4));
+		setCarousel(new Carousel(this, 5));
 	}
 
 	@Override
@@ -126,27 +110,21 @@ public class Main extends ApplicationAdapter {
 		getCamera().update();
 
 		getBatch().begin();
+		int tileCount = 30;
 		getBatch().draw(getBackground(), 0, 0,
-				getBackground().getWidth() * tilesW,
-				getBackground().getHeight() * tilesH, 0, tilesH, tilesW, 0);
+				getBackground().getWidth() * tileCount, 
+				getBackground().getHeight() * tileCount, 
+	            0, tileCount, 
+	            tileCount, 0);
+//		getBatch().draw(getBackground(), 0, 0,
+//				getBackground().getWidth() * tilesW,
+//				getBackground().getHeight() * tilesH, 0, tilesH, tilesW, 0);
 		getBatch().end();
 		
-//		for(int i = 0, l = randomBackgrounds.size; i < l; ++i) randomBackgrounds.get(i).drawMesh();
-		MeshHelper mesh = Meshes.create(
-    			this, 
-    			getSprites().get(SpriteType.CELL, "cell_blood"), 
-    			0, 
-    			100 , 150,
-    			32*7, 32*7,
-        		null);
-		mesh.drawMesh();
+		for(int i = 0, l = randomBackgrounds.size; i < l; ++i) randomBackgrounds.get(i).drawMesh();
 		
-		
-		
-		if (getCarousel() != null)
-			getCarousel().render();
-		if (getBeam() != null)
-			getBeam().render();
+		if (getCarousel() != null) getCarousel().render();
+		if (getBeam() != null) getBeam().render();
 	}
 
 	@Override
@@ -162,6 +140,7 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		getSprites().dispose();
+		getTextures().dispose();
 		getBatch().dispose();
 		getBackground().dispose();
 		if (getCarousel() != null)
@@ -217,5 +196,13 @@ public class Main extends ApplicationAdapter {
 
 	public void setBackground(Texture background) {
 		this.background = background;
+	}
+
+	public Textures getTextures() {
+		return textures;
+	}
+
+	public void setTextures(Textures textures) {
+		this.textures = textures;
 	}
 }

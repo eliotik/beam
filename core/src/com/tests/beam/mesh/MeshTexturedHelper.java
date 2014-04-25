@@ -12,7 +12,7 @@ public class MeshTexturedHelper extends MeshHelper {
 
 	public MeshTexturedHelper(Main main, Sprite sprite, int rotation) {
 		super(main, sprite, rotation);
-		System.out.println(sprite.getU()+" : "+sprite.getU2()+" : "+sprite.getV()+" : "+sprite.getV2());
+		//System.out.println(sprite.getU()+" : "+sprite.getU2()+" : "+sprite.getV()+" : "+sprite.getV2());
 	}
 
 	public void createMesh(float meshStartX , float meshStartY, float meshWidth, float meshHeight) {
