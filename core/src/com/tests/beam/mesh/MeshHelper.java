@@ -1,4 +1,4 @@
-package com.tests.beam;
+package com.tests.beam.mesh;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,9 +10,10 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
+import com.tests.beam.Main;
 
 public class MeshHelper {
-    private static final boolean Y_DIRECTION_UP = true;
+    public static final boolean Y_DIRECTION_UP = true;
     
 	private Mesh mesh;
     private ShaderProgram shader;
@@ -26,7 +27,6 @@ public class MeshHelper {
     	setSprite(sprite);
     	setRotation(rotation);
         setTexture(sprite.getTexture());
-        createShader();
     }
 
 	public void createMesh(float meshStartX , float meshStartY, float meshWidth, float meshHeight, Color colour) {
@@ -38,13 +38,15 @@ public class MeshHelper {
 				1f, 1f,
 				colour,
 				1);
-    	setMesh(new Mesh(true, vertices.length, 0,
-    			new VertexAttribute(Usage.Position, 2, "a_position"),
-    			new VertexAttribute(Usage.ColorPacked, 4, "a_color"),
+		createShader();
+		setMesh(new Mesh(true, vertices.length, 0,
+				new VertexAttribute(Usage.Position, 2, "a_position"),
+				new VertexAttribute(Usage.ColorPacked, 4, "a_color"),
     			new VertexAttribute(Usage.TextureCoordinates, 2, "a_texCoords")));
-        getMesh().setVertices(vertices);
+    	getMesh().setVertices(vertices);
+	        
     }
-
+	
     private void createShader() {
         // this shader tells opengl where to put things
     	String vertexShader = "attribute vec4 a_position;    \n"
@@ -57,7 +59,6 @@ public class MeshHelper {
 				+ "{                             \n"
 				+ "   v_color = a_color;         \n"
 				+ "   v_texCoords = a_texCoords; \n"
-//				+ "   gl_Position = a_position;  \n"
 				+ "   gl_Position = u_projTrans * a_position; \n"
 				+ "}                             \n";
  
@@ -79,6 +80,9 @@ public class MeshHelper {
         // check there's no shader compile errors
         if (!getShader().isCompiled())
             throw new IllegalStateException(getShader().getLog());
+        
+        if (getShader().getLog().length()!=0)
+			System.out.println(getShader().getLog());
     }
     
 	public void drawMesh() {
@@ -104,18 +108,19 @@ public class MeshHelper {
 	    getShader().setUniformi("u_texture", 0);
 	    getTexture().bind();
 		
-		getShader().begin();
 		getMesh().render(getShader(), GL20.GL_TRIANGLE_FAN);
 		getShader().end();
-		gl.glDisable(GL20.GL_TEXTURE_2D);
-		gl.glDisable(GL20.GL_BLEND);
+//		gl.glDisable(GL20.GL_TEXTURE_2D);
+//		gl.glDisable(GL20.GL_BLEND);
 	}
 	
-	   public void dispose() {
-	        getMesh().dispose();
-	        getShader().dispose();
-	        getTexture().dispose();
-	    }
+	public void dispose() {
+		getMesh().dispose();
+		getShader().dispose();
+		getTexture().dispose();
+		Gdx.gl20.glDisable(GL20.GL_TEXTURE_2D);
+		Gdx.gl20.glDisable(GL20.GL_BLEND);
+	}
 
 	public Sprite getSprite() {
 		return sprite;

@@ -2,6 +2,8 @@ package com.tests.beam;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.tests.beam.mesh.MeshHelper;
+import com.tests.beam.mesh.Meshes;
 
 public class Beam {
 	private Array<MeshHelper> meshes = new Array<MeshHelper>();
@@ -22,7 +24,7 @@ public class Beam {
 	private void addMesh(Main main, String spriteName, float x, float y, int width, int height, int rotation, String colour) {
 		MeshHelper mesh = Meshes.create(
 			main, 
-			main.getSprites().get(spriteName), 
+			main.getSprites().get(SpriteType.BEAM, spriteName), 
 			rotation, 
 			x, y,
     		width, height,

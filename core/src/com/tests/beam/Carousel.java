@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.tests.beam.mesh.MeshHelper;
+import com.tests.beam.mesh.Meshes;
 
 public class Carousel {
 	private Array<MeshHelper> meshes = new Array<MeshHelper>();
@@ -22,7 +24,7 @@ public class Carousel {
 		while(localAngle > 0) {
         	MeshHelper mesh = Meshes.create(
         			main, 
-        			main.getSprites().get("middle_background"), 
+        			main.getSprites().get(SpriteType.BEAM, "middle_background"), 
         			localAngle, 
         			meshStartX , meshStartY,
         			meshWidth, meshHeight*meshSizeMultiplier,
@@ -31,7 +33,7 @@ public class Carousel {
         	
         	mesh = Meshes.create(
         			main, 
-        			main.getSprites().get("middle_overlay"), 
+        			main.getSprites().get(SpriteType.BEAM, "middle_overlay"), 
         			localAngle, 
         			meshStartX , meshStartY,
         			meshWidth, meshHeight*meshSizeMultiplier,
