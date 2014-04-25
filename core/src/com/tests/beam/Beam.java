@@ -1,6 +1,7 @@
 package com.tests.beam;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 public class Beam {
@@ -10,13 +11,13 @@ public class Beam {
 	final static int BEAM_HEIGHT = 64;
 	
 	public Beam(Main main, float x, float y, int size, int rotation, String backgroundColour, String overlayColour) {
-		addMesh(main, "start_background", x, y, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
-		addMesh(main, "middle_background", x+52.5f*size, y+36.6f*size, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
-		addMesh(main, "end_background", x+52.5f*size+52.5f, y+36.6f*size+36.6f, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+		addMesh(main, "start_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+		addMesh(main, "middle_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
+		addMesh(main, "end_background", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
 		
-		addMesh(main, "start_overlay", x, y, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
-		addMesh(main, "middle_overlay", x+52.5f*size, y+36.6f*size, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
-		addMesh(main, "end_overlay", x+52.5f*size+52.5f, y+36.6f*size+36.6f, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+		addMesh(main, "start_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+		addMesh(main, "middle_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
+		addMesh(main, "end_overlay", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
 	}
 
 	private void addMesh(Main main, String spriteName, float x, float y, int width, int height, int rotation, String colour) {
@@ -30,6 +31,16 @@ public class Beam {
 		);
 		getMeshes().add(mesh);
 	}
+
+    private float[] getSlip(float angle, int width, int height){
+        float[] slip = new float[2];
+        float sin = MathUtils.sinDeg(angle);
+        float cos = MathUtils.cosDeg(angle);
+        slip[0] = (width/2)*cos - (height/2)* sin;
+        slip[1] = (width/2)*sin + (height/2)* cos;
+
+        return slip;
+    }
 	
 	public void render() {
 		for(int i = 0, l = getMeshes().size; i < l; ++i) getMeshes().get(i).drawMesh();
