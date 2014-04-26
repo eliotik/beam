@@ -1,5 +1,6 @@
 package com.tests.beam;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -8,44 +9,50 @@ import com.tests.beam.mesh.Meshes;
 
 public class Beam {
 	private Array<MeshHelper> meshes = new Array<MeshHelper>();
-	
+	private final Main main;
 	final static int BEAM_WIDTH = 64;
 	final static int BEAM_HEIGHT = 64;
 	
+	private float lifeTimeOfLaser;
+	public final float totalTimeOfLaser = 2.0f;
+	private float alphaValue = 1;
+	
 	private int rotation;
+	private float x;
+	private float y; 
+	private int size;
+	private String backgroundColour;
+	private String overlayColour;
 	
 	public Beam(Main main, float x, float y, int size, int rotation, String backgroundColour, String overlayColour) {
-		initMeshes(main, x, y, size, rotation, backgroundColour, overlayColour);
-	}
-
-	private void initMeshes(Main main, float x, float y, int size,
-			int rotation, String backgroundColour, String overlayColour) {
+		this.main = main;
+		setX(x);
+		setY(y);
+		setSize(size);
 		setRotation(rotation);
-
-        double mMF = meshMultiplierFactor(size);
-
-        float firstStepSlipX = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0];
-        float firstStepSlipY = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1];
-
-        float secondStepSlipX = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0];
-        float secondStepSlipY = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1];
-
-        float thirdStepSlipX = getSlip(rotation,  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * size))[0];
-        float thirdStepSlipY = getSlip(rotation,  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * size))[1];
-
-        addMesh(main, "start_background", x - firstStepSlipX , y - firstStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
-        addMesh(main, "start_overlay", x - firstStepSlipX, y - firstStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
-
-        addMesh(main, "middle_background", x - secondStepSlipX, y - secondStepSlipY, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
-        addMesh(main, "middle_overlay", x - secondStepSlipX, y - secondStepSlipY, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
-
-        addMesh(main, "end_background", x - thirdStepSlipX, y - thirdStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
-        addMesh(main, "end_overlay", x - thirdStepSlipX, y - thirdStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+		setBackgroundColour(backgroundColour);
+		setOverlayColour(overlayColour);
+		initMeshes();
 	}
 
-	private void addMesh(Main main, String spriteName, float x, float y, int width, int height, int rotation, String colour) {
+	private void initMeshes() {
+		float[] meshFirstPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT);
+		float[] meshSecondPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * getSize());
+		float[] meshThirdPart = getSlip(getRotation(),  BEAM_WIDTH, 3 * BEAM_HEIGHT * getSize());
+		
+		addMesh("start_background", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getBackgroundColour());
+		addMesh("start_overlay", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getOverlayColour());
+		
+		addMesh("middle_background", getX() - meshSecondPart[0], getY() - meshSecondPart[1], BEAM_WIDTH, BEAM_HEIGHT*getSize(), getRotation(), getBackgroundColour());
+		addMesh("middle_overlay", getX() - meshSecondPart[0], getY() - meshSecondPart[1], BEAM_WIDTH, BEAM_HEIGHT*getSize(), getRotation(), getOverlayColour());
+		
+		addMesh("end_background", getX() - meshThirdPart[0], getY() - meshThirdPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getBackgroundColour());
+		addMesh("end_overlay", getX() - meshThirdPart[0], getY() - meshThirdPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getOverlayColour());
+	}
+
+	private void addMesh(String spriteName, float x, float y, int width, int height, int rotation, String colour) {
 		MeshHelper mesh = Meshes.create(
-			main, 
+			getMain().getCamera(), 
 			main.getSprites().get(SpriteType.BEAM, spriteName), 
 			rotation, 
 			x, y,
@@ -101,22 +108,99 @@ public class Beam {
 		this.rotation = rotation;
 	}
 
-	public void update(float x, float y, int size, int rotation) {
+	public void reconstruct() {
+		reconstruct(getX(), getY(), getSize(), rotation);
+	}
+	
+	public void reconstruct(float x, float y, int size, int rotation) {
 		setRotation(rotation);
 		for (int i = 0, l = getMeshes().size; i < l; ++i) {
 			switch(getGroupId(i)) {
 			case 1:
-				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], rotation);
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], rotation, getAlphaValue());
 				break;
 			case 2:
-				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], rotation);
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], rotation, getAlphaValue());
 				break;
 			case 3: 
-				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], rotation);
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], rotation, getAlphaValue());
 				break;
 			default: 
 				break;
 			}
 		}
+	}
+
+	public float getLifeTimeOfLaser() {
+		return lifeTimeOfLaser;
+	}
+
+	public void setLifeTimeOfLaser(float lifeTimeOfLaser) {
+		this.lifeTimeOfLaser = lifeTimeOfLaser;
+		if (lifeTimeOfLaser > getTotalTimeOfLaser()) {
+			this.lifeTimeOfLaser = 0f;
+		}
+	}
+
+	public float getTotalTimeOfLaser() {
+		return totalTimeOfLaser;
+	}
+
+	public void update() {
+		setLifeTimeOfLaser(getLifeTimeOfLaser() + Gdx.graphics.getDeltaTime());
+		setAlphaValue(1 - getLifeTimeOfLaser() );
+		reconstruct();
+	}
+
+	public float getAlphaValue() {
+		return alphaValue;
+	}
+
+	public void setAlphaValue(float alphaValue) {
+		this.alphaValue = alphaValue;
+	}
+
+	public Main getMain() {
+		return main;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public String getBackgroundColour() {
+		return backgroundColour;
+	}
+
+	public void setBackgroundColour(String backgroundColour) {
+		this.backgroundColour = backgroundColour;
+	}
+
+	public String getOverlayColour() {
+		return overlayColour;
+	}
+
+	public void setOverlayColour(String overlayColour) {
+		this.overlayColour = overlayColour;
 	}
 }

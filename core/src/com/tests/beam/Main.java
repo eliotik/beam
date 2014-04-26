@@ -17,6 +17,8 @@ import com.tests.beam.mesh.MeshType;
 import com.tests.beam.mesh.Meshes;
 
 public class Main extends ApplicationAdapter {
+	public static final boolean Y_DIRECTION_UP = true;
+	
 	private Sprites sprites;
 	private Textures textures;
 	private OrthographicCamera camera;
@@ -29,6 +31,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create() {
+		setCamera(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		setSprites(new Sprites(this));
 		setTextures(new Textures(this));
 		setBatch(new SpriteBatch());
@@ -37,8 +40,7 @@ public class Main extends ApplicationAdapter {
 		tilesW = Gdx.graphics.getWidth() / getBackground().getWidth() + 1;
 		tilesH = Gdx.graphics.getHeight() / getBackground().getHeight() + 1;
 		createRandomBackgrounds();
-		setCamera(new OrthographicCamera(Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight()));
+		
 		generateMeshes(MeshType.CAROUSEL);
 	}
 
@@ -63,7 +65,7 @@ public class Main extends ApplicationAdapter {
 				}
 				
 				MeshHelper mesh = Meshes.create(
-		    			this, 
+		    			camera, 
 		    			new Sprite(getTextures().get(textureName)), 
 		    			0, 
 		    			x*32 + 4 , y*32 + 1,
@@ -108,7 +110,10 @@ public class Main extends ApplicationAdapter {
 		Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		getCamera().update();
-
+		getCamera().setToOrtho(Y_DIRECTION_UP, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		if (getBeam() != null) getBeam().update();
+		
 		getBatch().begin();
 		int tileCount = 30;
 		getBatch().draw(getBackground(), 0, 0,
