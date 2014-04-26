@@ -22,14 +22,25 @@ public class Beam {
 			int rotation, String backgroundColour, String overlayColour) {
 		setRotation(rotation);
 
-		addMesh(main, "start_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
-		addMesh(main, "start_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
-		
-		addMesh(main, "middle_background", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
-		addMesh(main, "middle_overlay", x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
+        double mMF = meshMultiplierFactor(size);
 
-		addMesh(main, "end_background", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
-		addMesh(main, "end_overlay", x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+        float firstStepSlipX = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[0];
+        float firstStepSlipY = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT)[1];
+
+        float secondStepSlipX = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0];
+        float secondStepSlipY = getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1];
+
+        float thirdStepSlipX = getSlip(rotation,  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * size))[0];
+        float thirdStepSlipY = getSlip(rotation,  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * size))[1];
+
+        addMesh(main, "start_background", x - firstStepSlipX , y - firstStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+        addMesh(main, "start_overlay", x - firstStepSlipX, y - firstStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
+
+        addMesh(main, "middle_background", x - secondStepSlipX, y - secondStepSlipY, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, backgroundColour);
+        addMesh(main, "middle_overlay", x - secondStepSlipX, y - secondStepSlipY, BEAM_WIDTH, BEAM_HEIGHT*size, rotation, overlayColour);
+
+        addMesh(main, "end_background", x - thirdStepSlipX, y - thirdStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, backgroundColour);
+        addMesh(main, "end_overlay", x - thirdStepSlipX, y - thirdStepSlipY, BEAM_WIDTH, BEAM_HEIGHT, rotation, overlayColour);
 	}
 
 	private void addMesh(Main main, String spriteName, float x, float y, int width, int height, int rotation, String colour) {
@@ -43,6 +54,10 @@ public class Beam {
 		);
 		getMeshes().add(mesh);
 	}
+
+    private double meshMultiplierFactor(int size) {
+        return  (double)(5 + (size - 1)* 2)/size;
+    }
 
     private float[] getSlip(float angle, int width, int height){
         float[] slip = new float[2];
