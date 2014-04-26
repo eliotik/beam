@@ -36,9 +36,10 @@ public class Beam {
 	}
 
 	private void initMeshes() {
+        double mMF = meshMultiplierFactor(getSize());
 		float[] meshFirstPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT);
 		float[] meshSecondPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * getSize());
-		float[] meshThirdPart = getSlip(getRotation(),  BEAM_WIDTH, 3 * BEAM_HEIGHT * getSize());
+		float[] meshThirdPart = getSlip(getRotation(),  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * getSize()));
 		
 		addMesh("start_background", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getBackgroundColour());
 		addMesh("start_overlay", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getOverlayColour());
