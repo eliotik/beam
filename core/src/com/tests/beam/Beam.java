@@ -23,6 +23,8 @@ public class Beam {
 	private int size;
 	private String backgroundColour;
 	private String overlayColour;
+
+    private double mMF;
 	
 	public Beam(Main main, float x, float y, int size, int rotation, String backgroundColour, String overlayColour) {
 		this.main = main;
@@ -33,14 +35,15 @@ public class Beam {
 		setBackgroundColour(backgroundColour);
 		setOverlayColour(overlayColour);
 		initMeshes();
+        initMeshMultiplierFactor();
 	}
 
 	private void initMeshes() {
-        double mMF = meshMultiplierFactor(getSize());
+
 		float[] meshFirstPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT);
 		float[] meshSecondPart = getSlip(getRotation(),  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * getSize());
-		float[] meshThirdPart = getSlip(getRotation(),  BEAM_WIDTH, (int) (mMF * BEAM_HEIGHT * getSize()));
-		
+		float[] meshThirdPart = getSlip(getRotation(),  BEAM_WIDTH, (int) (getMMF() * BEAM_HEIGHT * getSize()));
+
 		addMesh("start_background", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getBackgroundColour());
 		addMesh("start_overlay", getX() - meshFirstPart[0], getY() - meshFirstPart[1], BEAM_WIDTH, BEAM_HEIGHT, getRotation(), getOverlayColour());
 		
@@ -63,9 +66,11 @@ public class Beam {
 		getMeshes().add(mesh);
 	}
 
-    private double meshMultiplierFactor(int size) {
-        return  (double)(5 + (size - 1)* 2)/size;
+    private void initMeshMultiplierFactor() {
+        setMMF((double) (5 + (getSize() - 1) * 2) / getSize());
     }
+
+
 
     private float[] getSlip(float angle, int width, int height){
         float[] slip = new float[2];
@@ -124,7 +129,7 @@ public class Beam {
 				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, BEAM_HEIGHT + 2 * BEAM_HEIGHT * size)[1], rotation, getAlphaValue());
 				break;
 			case 3: 
-				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[0], y - getSlip(rotation,  BEAM_WIDTH, 3 * BEAM_HEIGHT * size)[1], rotation, getAlphaValue());
+				getMeshes().get(i).updateMesh(x - getSlip(rotation,  BEAM_WIDTH, (int) (getMMF() * BEAM_HEIGHT * size))[0], y - getSlip(rotation,  BEAM_WIDTH, (int) (getMMF() * BEAM_HEIGHT * size))[1], rotation, getAlphaValue());
 				break;
 			default: 
 				break;
@@ -204,4 +209,12 @@ public class Beam {
 	public void setOverlayColour(String overlayColour) {
 		this.overlayColour = overlayColour;
 	}
+
+    public double getMMF() {
+        return mMF;
+    }
+
+    public void setMMF(double mMF) {
+        this.mMF = mMF;
+    }
 }
