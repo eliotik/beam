@@ -1,13 +1,13 @@
 package com.tests.beam.mesh;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.tests.beam.Main;
 
 public class Meshes {
-	public static MeshHelper create(Main main, Sprite sprite, int rotation, float x, float y, int width, int height, Color colour) {
+	public static MeshHelper create(OrthographicCamera camera, Sprite sprite, int rotation, float x, float y, int width, int height, Color colour) {
 		if (colour == null) {
-			MeshTexturedHelper mesh = new MeshTexturedHelper(main, sprite, rotation);
+			MeshTexturedHelper mesh = new MeshTexturedHelper(camera, sprite, rotation);
 			mesh.createMesh( 
 		    		x, y,
 		    		width, height
@@ -15,7 +15,7 @@ public class Meshes {
 			return mesh;
 		} else {
 		
-			MeshHelper mesh = new MeshHelper(main, sprite, rotation);
+			MeshHelper mesh = new MeshHelper(camera, sprite, rotation);
 			mesh.createMesh( 
 		    		x, y,
 		    		width, height,

@@ -4,29 +4,29 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
-import com.tests.beam.Main;
 
 public class MeshHelper {
-    public static final boolean Y_DIRECTION_UP = true;
+//    public static final boolean Y_DIRECTION_UP = true;
     
 	private Mesh mesh;
     private ShaderProgram shader;
     private Texture texture;
     private Sprite sprite;
-    private final Main main;
+    private final OrthographicCamera camera;
     private int rotation = 0;
     private float width;
     private float height;
     private Color colour;
     
-    public MeshHelper(Main main, Sprite sprite, int rotation) {
-    	this.main = main;
+    public MeshHelper(OrthographicCamera camera, Sprite sprite, int rotation) {
+    	this.camera = camera;
     	setSprite(sprite);
     	setRotation(rotation);
         setTexture(sprite.getTexture());
@@ -106,10 +106,10 @@ public class MeshHelper {
 	    gl.glEnable(GL20.GL_BLEND);
         gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 	    
-	    getMain().getCamera().setToOrtho(Y_DIRECTION_UP, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//	    getCamera().setToOrtho(Y_DIRECTION_UP, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	    
 	    getShader().begin();
-	    getShader().setUniformMatrix("u_projTrans", getMain().getCamera().combined);
+	    getShader().setUniformMatrix("u_projTrans", getCamera().combined);
 	    //this sets our uniform 'u_texture' (i.e. the gl texture we want to use) to 0.
 	    getShader().setUniformi("u_texture", 0);
 	    getTexture().bind();
@@ -348,12 +348,9 @@ public class MeshHelper {
 		this.sprite = sprite;
 	}
 
-	public Main getMain() {
-		return main;
-	}
-
-	public void updateMesh(float x, float y, int rotation) {
+	public void updateMesh(float x, float y, int rotation, float alpha) {
 		setRotation(rotation);
+		getColour().a = alpha;
 		getMesh().setVertices(constructMesh(
 				1,
 				x , y,
@@ -386,5 +383,9 @@ public class MeshHelper {
 
 	public void setColour(Color colour) {
 		this.colour = colour;
+	}
+
+	public OrthographicCamera getCamera() {
+		return camera;
 	}
 }

@@ -3,16 +3,15 @@ package com.tests.beam.mesh;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.tests.beam.Main;
 
 public class MeshTexturedHelper extends MeshHelper {
 
-	public MeshTexturedHelper(Main main, Sprite sprite, int rotation) {
-		super(main, sprite, rotation);
-		//System.out.println(sprite.getU()+" : "+sprite.getU2()+" : "+sprite.getV()+" : "+sprite.getV2());
+	public MeshTexturedHelper(OrthographicCamera camera, Sprite sprite, int rotation) {
+		super(camera, sprite, rotation);
 	}
 
 	public void createMesh(float meshStartX , float meshStartY, float meshWidth, float meshHeight) {
@@ -95,30 +94,9 @@ public class MeshTexturedHelper extends MeshHelper {
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		getTexture().bind();
 		getShader().begin();
-		getShader().setUniformMatrix("u_worldView", getMain().getCamera().combined);
+		getShader().setUniformMatrix("u_worldView", getCamera().combined);
 		getShader().setUniformi("u_texture", 0);
 		getMesh().render(getShader(), GL20.GL_TRIANGLE_FAN);
 		getShader().end();
-		
-		
-		
-		/*
-		GL20 gl = Gdx.graphics.getGL20();
-	    gl.glEnable(GL20.GL_TEXTURE_2D);
-	    gl.glActiveTexture(GL20.GL_TEXTURE0);
-	 
-	    gl.glEnable(GL20.GL_BLEND);
-        gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        
-	    //getMain().getCamera().setToOrtho(Y_DIRECTION_UP, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        getShader().begin();	    
-	    getShader().setUniformMatrix("u_projTrans", getMain().getCamera().combined);
-	    getShader().setUniformi("u_texture", 0);
-	    getTexture().bind();
-		
-		getMesh().render(getShader(), GL20.GL_TRIANGLES, 0, 6);
-		getShader().end();
-		gl.glDisable(GL20.GL_TEXTURE_2D);
-		gl.glDisable(GL20.GL_BLEND);*/
 	}
 }
