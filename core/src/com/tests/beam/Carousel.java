@@ -10,7 +10,7 @@ public class Carousel {
 	private Array<Integer> sizes = new Array<Integer>();
 	
 	public Carousel(final Main main, int quantity) {
-		for(int i = 0; i <= quantity; ++i){
+		for(int i = 0; i <= quantity; i++){
 			getSizes().add(i+1);	
 		}
 
@@ -18,9 +18,10 @@ public class Carousel {
 		if (quantity <= 0) quantity = 1;
 		float angleStep = (int)(localAngle / quantity);
         int beamNumber = 0;
-		while(localAngle > 0) {
+		while(localAngle > 0 && beamNumber < getSizes().size) {
 			Beam beam = new Beam(main, Gdx.graphics.getWidth() / 2,
-					Gdx.graphics.getHeight() / 2, getSizes().get(beamNumber), localAngle, "5f2f32ff", "ffffffff");
+					Gdx.graphics.getHeight() / 2, getSizes().get(beamNumber), 
+					localAngle, "5f2f32ff", "ffffffff");
 			getBeams().add(beam);
         	localAngle -= angleStep;
         	++beamNumber;

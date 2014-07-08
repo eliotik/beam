@@ -95,7 +95,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void createCarousel() {
-		setCarousel(new Carousel(this, 5));
+		setCarousel(new Carousel(this, 8));
 	}
 
 	@Override
